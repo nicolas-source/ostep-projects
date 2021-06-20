@@ -1,33 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int main(int argc, char *argv[]){
+extern int errno;
 
-//	char fileName[50] = argv[0];
-
-    char *fileName = argv[1];
-    
-	printf("fileName = %s\n", fileName);
-	printf("argc = %d\n", argc);
-	printf("argv = %s\n", argv[1]);
-
-	FILE *filePointer = fopen(fileName, "r");
-
-	if (filePointer == NULL){
-		printf("cannot open file\n");
-		exit(1);
-	}
-
-    
-    
-    
+int main(int argc, char *argv[]) {
+    int errnum;
 
     int length = 50;
     char str[length];
-	if (fgets(str, length, filePointer) != NULL){
-		puts(str);
-	}
-	fclose(filePointer);
 
-	return(0);
+    int i = 1;
+    while (argv[i] != NULL) {
+        FILE *filePointer = fopen(argv[i], "r");
+        if (filePointer == NULL) {
+            errnum = errno;
+//          fprintf(stderr, "Value of errno: %d\n", errno);
+//          perror("Error printed by perror");
+//          fprintf(stderr, "Error opening file: %s\n", strerror( errnum ));
+            if (errnum == 2) {
+                printf("wcat: cannot open file\n");
+                exit(1);
+            }
+            exit(0);
+        }
+
+        while (fgets(str, length, filePointer) != NULL) {
+//		puts(str);
+            printf("%s", str);
+        }
+        fclose(filePointer);
+        i++;
+    }
+
+
+    return (0);
 }
