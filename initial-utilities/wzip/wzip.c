@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
 //whoops this actually dynamically reads a file.
 int contains(char *haystack, char *needle);
+
+void countOccurences(char *str);
+
+void stringCreator(char currentChar, int count, char *newStr);
 
 int main(int argc, char *argv[]) {
 //    printf("Int: %lu \n", sizeof(int));
@@ -10,39 +16,6 @@ int main(int argc, char *argv[]) {
 
     FILE *filePointer;
     filePointer = fopen(argv[1], "r");
-
-
-
-//    size_t maxLineSize = 10;
-//    char *line = malloc(maxLineSize * sizeof(char));
-//
-//    fgets(line, maxLineSize, filePointer);
-//    printf("1 Line: %s", line);
-//    printf("\nNum: %d", line[strlen(line) - 1]);
-//
-//    fseek(filePointer, -9, SEEK_CUR);
-//
-//
-//    maxLineSize = maxLineSize * 2;
-//    line = realloc(line, maxLineSize);
-//    fgets(line, maxLineSize, filePointer);
-//    printf("\n2 Line: %s", line);
-//    printf("\nNum: %d", line[strlen(line) - 1]);
-//
-//    maxLineSize = 10;
-//    fgets(line, maxLineSize, filePointer);
-//    printf("\n3 Line: %s", line);
-//    printf("\nNum: %d", line[strlen(line) - 1]);
-//
-//    fseek(filePointer, -9, SEEK_CUR);
-//
-//    maxLineSize = maxLineSize * 2;
-//    line = realloc(line, maxLineSize);
-//
-//    fgets(line, maxLineSize, filePointer);
-//    printf("\n4 Line: %s", line);
-//    printf("\nNum: %d", line[strlen(line) - 1]);
-//    printf("\n%s", fgets(line, maxLineSize, filePointer));
 
 
     size_t maxLineSize = 10;
@@ -54,9 +27,9 @@ int main(int argc, char *argv[]) {
 //        printf("\n%s", line);
         // Resets maxLineSize
 //        maxLineSize = 10;
-        if (feof(filePointer)){
+        if (feof(filePointer)) {
             printf("\nTrue: %s", line);
-
+            countOccurences(line);
             break;
         }
         while (line[strlen(line) - 1] != '\n') {
@@ -70,8 +43,10 @@ int main(int argc, char *argv[]) {
 //                maxLineSize = 10;
                 break;
             }
-            printf("\nTrue: %s", line);
+
         }
+//        printf("\nTrue: %s", line);
+        countOccurences(line);
 
     }
 
@@ -79,10 +54,61 @@ int main(int argc, char *argv[]) {
     return (0);
 }
 
-int contains(char *haystack, char *needle){
-       if (strstr(haystack, needle) != NULL) {
-           return 1;
-       } else {
-           return 0;
-       }
+void countOccurences(char *str) {
+//    printf("\n%s", str);
+//    printf("\n%lu", strlen(str));
+    char newStr[64] = "";
+    char currentChar;
+    char nextChar;
+    int count = 1;
+    for (int i = 0; i < strlen(str); i++) {
+        currentChar = str[i];
+        nextChar = str[i + 1];
+//        printf("\n%c %c", currentChar, nextChar);
+        if (currentChar == nextChar) {
+
+            count++;
+        } else if (i == strlen(str) - 1) {
+            stringCreator(currentChar, count, newStr);
+        } else {
+            stringCreator(currentChar, count, newStr);
+            count = 1; // Reset count
+        }
+    }
+//    printf("\nString: %s", newStr);
+    newStr[strlen(newStr)] = '\0';
+    char *outStr = malloc(strlen(newStr) * sizeof(char));
+    strcpy(outStr, newStr);
+//    printf("\nprintf: %s\n", outStr);
+//    char outStr1[4] = "123";
+    fwrite(outStr, sizeof(char), strlen(outStr) * sizeof(char), stdout);
+//    printf("%s", outStr);
+//    printf("\n%b", outStr);
+}
+
+void stringCreator(char currentChar, int count, char *newStr){
+
+    //            strncat(newStr, &currentChar, 1);
+    char chCC[2] = {currentChar, '\0'};
+
+
+
+//    char tmp = count + '0';
+//            strncat(newStr, &tmp, 1);
+//    char chT[2] = {tmp, '\0'};
+
+    int num = floor (log10 (abs (count))) + 1;
+    char *tmpCount = malloc(num * sizeof(char));
+    sprintf(tmpCount, "%d", count);
+    strcat(newStr, tmpCount);
+    strcat(newStr, chCC);
+}
+
+
+int contains(char *haystack, char *needle) {
+    if (strstr(haystack, needle) != NULL) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
